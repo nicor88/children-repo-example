@@ -23,7 +23,7 @@ default_args = {
 }
 
 with DAG(
-    'sample_dag_v2',
+    'sample_dag',
     default_args=default_args,
     description='A sample Airflow DAG',
     schedule_interval=None,
