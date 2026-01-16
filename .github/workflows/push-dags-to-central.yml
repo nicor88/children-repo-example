@@ -1,0 +1,63 @@
+name: Push DAGs to Central Repository
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'dags/**'
+  workflow_dispatch:
+
+jobs:
+  push-to-central:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout children repository
+        uses: actions/checkout@v4
+        with:
+          path: children-repo
+
+      - name: Checkout central repository
+        uses: actions/checkout@v4
+        with:
+          repository: nicor88/central-repo-example
+          token: ${{ secrets.CENTRAL_REPO_TOKEN }}
+          path: central-repo
+
+      - name: Create target directory if it doesn't exist
+        run: |
+          mkdir -p central-repo/children-repo-example
+
+      - name: Copy DAGs to central repository
+        run: |
+          # Remove existing content in the target directory
+          rm -rf central-repo/children-repo-example/*
+          
+          # Copy all contents from children-repo dags folder
+          cp -r children-repo/dags/* central-repo/children-repo-example/ || true
+          
+          # Create .gitkeep if directory is empty
+          if [ -z "$(ls -A central-repo/children-repo-example)" ]; then
+            touch central-repo/children-repo-example/.gitkeep
+          fi
+
+      - name: Configure Git
+        run: |
+          cd central-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push changes
+        run: |
+          cd central-repo
+          git add children-repo-example/
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update DAGs from children-repo-example [skip ci]"
+            git push
+          fi
+
