@@ -32,14 +32,14 @@ jobs:
       - name: Copy DAGs to central repository
         run: |
           # Remove existing content in the target directory
-          rm -rf central-repo/children-repo-example/*
+          rm -rf central-repo/dags/children-repo-example/*
           
           # Copy all contents from children-repo dags folder
-          cp -r children-repo/dags/* central-repo/children-repo-example/ || true
+          cp -r children-repo/dags/* central-repo/dags/children-repo-example/ || true
           
           # Create .gitkeep if directory is empty
-          if [ -z "$(ls -A central-repo/children-repo-example)" ]; then
-            touch central-repo/children-repo-example/.gitkeep
+          if [ -z "$(ls -A central-repo/dags/children-repo-example)" ]; then
+            touch central-repo/dags/children-repo-example/.gitkeep
           fi
 
       - name: Configure Git
@@ -51,12 +51,12 @@ jobs:
       - name: Commit and push changes
         run: |
           cd central-repo
-          git add children-repo-example/
+          git add dags/children-repo-example/
           
           # Check if there are changes to commit
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update DAGs from children-repo-example [skip ci]"
+            git commit -m "Update DAGs from children-repo-example"
             git push
           fi
