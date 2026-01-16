@@ -25,7 +25,7 @@ default_args = {
 with DAG(
     'sample_dag',
     default_args=default_args,
-    description='A sample Airflow DAG for demonstration',
+    description='A sample Airflow DAG',
     schedule_interval=None,
     start_date=datetime(2024, 1, 1),
     catchup=False,

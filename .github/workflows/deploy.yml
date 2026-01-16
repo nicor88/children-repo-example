@@ -33,6 +33,9 @@ jobs:
         run: |
           # Remove existing content in the target directory
           rm -rf central-repo/dags/children-repo-example/*
+
+          # Create the target directory if it doesn't exist
+          mkdir -p central-repo/dags/children-repo-example
           
           # Copy all contents from children-repo dags folder
           cp -r children-repo/dags/* central-repo/dags/children-repo-example/ || true
@@ -42,7 +45,7 @@ jobs:
             touch central-repo/dags/children-repo-example/.gitkeep
           fi
 
-      - name: Configure Git
+      - name: Configure Git for central repository
         run: |
           cd central-repo
           git config user.name "github-actions[bot]"
